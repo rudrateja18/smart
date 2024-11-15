@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Smart Plant Monitor</title> 
+    <style type="text/css">
+        :root {
+            --primary-color: #6EB7FF;
+            --secondary-color: #333;
+            --background-color: #F5F5F5;
+            --card-background: #FFF;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --danger-color: #FF5252;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Header styles */
+        header {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #FFF;
+            text-align: center;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--secondary-color), #1a1a1a);
+            height: 100vh;
+            padding: 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            color: #FFF;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .sidebar a {
+            color: #FFF;
+            padding: 1rem;
+            text-decoration: none;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            transform: translateX(10px);
+        }
+
+        /* Dashboard content styles */
+        .dashboard-content {
+            padding: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+
+        .dashboard-header {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            text-align: center;
+            padding: 2rem;
+            background: var(--card-background);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+        }
+
+        .data-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .data-card {
+            background: var(--card-background);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .data-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .data-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .data-card h2 {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .data-card p {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .data-card:hover p {
+            transform: scale(1.1);
+        }
+
+        /* Status indicators */
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .status-good {
+            background-color: var(--success-color);
+        }
+
+        .status-warning {
+            background-color: var(--warning-color);
+        }
+
+        .status-danger {
+            background-color: var(--danger-color);
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 1200px) {
+            .data-container {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            header p {
+                font-size: 1rem;
+            }
+
+            .data-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .data-card p {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>Smart Plant Monitor</h1>
+        <p>Real-time data from your plant sensors</p>
+    </header>
+
+    <!-- Dashboard content -->
+    <div class="dashboard-content">
+        <div class="dashboard-header">Sensor Real-Time Readings Dashboard</div>
+
+        <div class="data-container">
+            <div class="data-card">
+                <h2>Temperature<span class="status-indicator" id="tempStatus"></span></h2>
+                <p id="temperature">-- &#8451;</p>
+            </div>
+            <div class="data-card">
+                <h2>Humidity<span class="status-indicator" id="humidStatus"></span></h2>
+                <p id="humidity">--%</p>
+            </div>
+            <div class="data-card">
+                <h2>Soil Moisture<span class="status-indicator" id="soilStatus"></span></h2>
+                <p id="soilMoisture">--</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCPltTT5G2QudFX7mfWNW1P-RGT7NBVkMw",
+            authDomain: "rkrkk-5c836.firebaseapp.com",
+            databaseURL: "https://rkrkk-5c836-default-rtdb.firebaseio.com",
+            projectId: "rkrkk-5c836",
+            storageBucket: "rkrkk-5c836.appspot.com",
+            messagingSenderId: "884921037216",
+            appId: "1:884921037216:web:98ce9c02dc9ead552bb4c5"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Get a reference to the database
+        const database = firebase.database();
+
+        // Get data references
+        const temperatureRef = database.ref('Temperature');
+        const humidityRef = database.ref('Humidity');
+        const soilMoistureRef = database.ref('SoilMoisture');
+
+        // Update status indicator
+        function updateStatus(value, type) {
+            const element = document.getElementById(`${type}Status`);
+            if (value >= 70) {
+                element.className = 'status-indicator status-danger';
+            } else if (value >= 50) {
+                element.className = 'status-indicator status-warning';
+            } else {
+                element.className = 'status-indicator status-good';
+            }
+        }
+
+        // Update UI with real-time data
+        temperatureRef.on('value', (snapshot) => {
+            const temp = snapshot.val();
+            document.getElementById('temperature').innerText = temp + " ℃";
+            updateStatus(temp, 'temp');
+        });
+
+        humidityRef.on('value', (snapshot) => {
+            const humidity = snapshot.val();
+            document.getElementById('humidity').innerText = humidity + "%";
+            updateStatus(humidity, 'humid');
+        });
+
+        soilMoistureRef.on('value', (snapshot) => {
+            const soilMoisture = snapshot.val();
+            document.getElementById('soilMoisture').innerText = soilMoisture;
+            updateStatus(soilMoisture, 'soil');
+        });
+    </script>
+</body>
+</html>
