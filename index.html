@@ -195,7 +195,7 @@
         // Update button text based on Firebase value
         pumpControlRef.on('value', (snapshot) => {
             const state = snapshot.val();
-            pumpButton.innerText = state ? "Turn On Pump" : "Turn Off Pump";
+            pumpButton.innerText = state ? "On Pump" : "Off Pump";
         });
     </script>
 </body>
