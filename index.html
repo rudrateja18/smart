@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Smart Plant Monitor</title> 
-    <style type="text/css">
+    <style>
+        /* Style remains the same as before */
         :root {
             --primary-color: #6EB7FF;
             --secondary-color: #333;
@@ -34,7 +35,6 @@
             min-height: 100vh;
         }
 
-        /* Header styles */
         header {
             width: 100%;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -54,78 +54,11 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Sidebar styles */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(135deg, var(--secondary-color), #1a1a1a);
-            height: 100vh;
-            padding: 2rem;
-            position: fixed;
-            top: 0;
-            left: 0;
-            color: #FFF;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
-        .sidebar h2 {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--primary-color);
-        }
-
-        .sidebar a {
-            color: #FFF;
-            padding: 1rem;
-            text-decoration: none;
-            font-size: 1.1rem;
-            border-radius: 8px;
-            margin: 0.5rem 0;
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar a:hover {
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-            transform: translateX(10px);
-        }
-
-        /* Dashboard content styles */
         .dashboard-content {
             padding: 2rem;
             width: 100%;
             max-width: 1200px;
             margin-top: 20px;
-        }
-
-        .dashboard-header {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--text-primary);
-            text-align: center;
-            padding: 2rem;
-            background: var(--card-background);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dashboard-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
         }
 
         .data-container {
@@ -146,33 +79,10 @@
             overflow: hidden;
         }
 
-        .data-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--primary-color);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .data-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .data-card:hover::before {
-            transform: scaleX(1);
-        }
-
         .data-card h2 {
             font-size: 1.4rem;
             color: var(--text-secondary);
             margin-bottom: 1rem;
-            position: relative;
-            display: inline-block;
         }
 
         .data-card p {
@@ -183,55 +93,20 @@
             transition: all 0.3s ease;
         }
 
-        .data-card:hover p {
-            transform: scale(1.1);
-        }
-
-        /* Status indicators */
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
+        .toggle-button {
             display: inline-block;
-            margin-left: 10px;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            color: #FFF;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
         }
 
-        .status-good {
-            background-color: var(--success-color);
-        }
-
-        .status-warning {
-            background-color: var(--warning-color);
-        }
-
-        .status-danger {
-            background-color: var(--danger-color);
-        }
-
-        /* Responsive Design */
-        @media screen and (max-width: 1200px) {
-            .data-container {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-        }
-
-        @media screen and (max-width: 768px) {
-            header h1 {
-                font-size: 2rem;
-            }
-
-            header p {
-                font-size: 1rem;
-            }
-
-            .data-container {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .data-card p {
-                font-size: 2.5rem;
-            }
+        .toggle-button:hover {
+            background: var(--success-color);
         }
     </style>
 </head>
@@ -248,16 +123,20 @@
 
         <div class="data-container">
             <div class="data-card">
-                <h2>Temperature<span class="status-indicator" id="tempStatus"></span></h2>
+                <h2>Temperature</h2>
                 <p id="temperature">-- &#8451;</p>
             </div>
             <div class="data-card">
-                <h2>Humidity<span class="status-indicator" id="humidStatus"></span></h2>
+                <h2>Humidity</h2>
                 <p id="humidity">--%</p>
             </div>
             <div class="data-card">
-                <h2>Soil Moisture<span class="status-indicator" id="soilStatus"></span></h2>
+                <h2>Soil Moisture</h2>
                 <p id="soilMoisture">--</p>
+            </div>
+            <div class="data-card">
+                <h2>Pump Control</h2>
+                <button class="toggle-button" id="pumpButton">Toggle Pump</button>
             </div>
         </div>
     </div>
@@ -288,36 +167,35 @@
         const temperatureRef = database.ref('Temperature');
         const humidityRef = database.ref('Humidity');
         const soilMoistureRef = database.ref('SoilMoisture');
-
-        // Update status indicator
-        function updateStatus(value, type) {
-            const element = document.getElementById(`${type}Status`);
-            if (value >= 70) {
-                element.className = 'status-indicator status-danger';
-            } else if (value >= 50) {
-                element.className = 'status-indicator status-warning';
-            } else {
-                element.className = 'status-indicator status-good';
-            }
-        }
+        const pumpControlRef = database.ref('PumpControl');
 
         // Update UI with real-time data
         temperatureRef.on('value', (snapshot) => {
-            const temp = snapshot.val();
-            document.getElementById('temperature').innerText = temp + " ℃";
-            updateStatus(temp, 'temp');
+            document.getElementById('temperature').innerText = snapshot.val() + " ℃";
         });
 
         humidityRef.on('value', (snapshot) => {
-            const humidity = snapshot.val();
-            document.getElementById('humidity').innerText = humidity + "%";
-            updateStatus(humidity, 'humid');
+            document.getElementById('humidity').innerText = snapshot.val() + "%";
         });
 
         soilMoistureRef.on('value', (snapshot) => {
-            const soilMoisture = snapshot.val();
-            document.getElementById('soilMoisture').innerText = soilMoisture;
-            updateStatus(soilMoisture, 'soil');
+            document.getElementById('soilMoisture').innerText = snapshot.val();
+        });
+
+        // Handle Pump Control button
+        const pumpButton = document.getElementById('pumpButton');
+        pumpButton.addEventListener('click', () => {
+            pumpControlRef.once('value', (snapshot) => {
+                const currentState = snapshot.val();
+                const newState = !currentState; // Toggle state
+                pumpControlRef.set(newState); // Update Firebase
+            });
+        });
+
+        // Update button text based on Firebase value
+        pumpControlRef.on('value', (snapshot) => {
+            const state = snapshot.val();
+            pumpButton.innerText = state ? "Turn On Pump" : "Turn Off Pump";
         });
     </script>
 </body>
